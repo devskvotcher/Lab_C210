@@ -14,7 +14,7 @@ protected:
     COLOR color;	//строка-член класса, определяющая цвет фигуры
 public:
     Shape(COLOR x);
-    virtual void Getsquare();
+    virtual int Getsquare()=0;
     virtual Shape& Clone() const = 0;
     virtual void Print(std::ostream& out) = 0;
     virtual void Inflate(int x);
@@ -22,8 +22,12 @@ public:
     std::ostream& operator<< (std::ostream& out);
     friend std::istream& operator>> (std::istream& in, const char* c);
     Shape::COLOR& GetNumberOfColor(std::string c);
+    virtual int GetNumber(COLOR color) = 0;
     const char* GetColor(COLOR color);
+    virtual Shape& operator=(const Shape& obj)=0;
+    Shape::COLOR& GetColorForFunc();
     virtual ~Shape();
+  
 };
 //Возьмем фигуру, которую описывает производный класс прямоугольник.
 class Rect:public Shape
@@ -35,11 +39,14 @@ public:
     Rect();
     Rect(unsigned int sideA, unsigned int sideB, unsigned int sideC, unsigned int sideD, COLOR color);    //Конструктор по умолчанию
     Rect(const Rect& rect);     //Конструктор копирования
-    void Getsquare() override;
+    int Getsquare() override;
     virtual Shape& Clone() const override;
     virtual void Print(std::ostream& out) override;
     virtual bool operator ==(const Shape& pc) override ;
     void Inflate(int x) override;
+    virtual Shape& operator=(const Shape& obj) override;
+    int GetNumber(COLOR color) override;
+    
     virtual ~Rect();
 };
 //Возьмем фигуру, которую описывает производный класс круг.
@@ -55,9 +62,11 @@ public:
     Circle(const Rect& r);
     virtual Shape& Clone() const override; 
     virtual void Print(std::ostream& out) override;
-    void Getsquare() override;
+    int Getsquare() override;
     virtual bool operator ==(const Shape& pc) override;
     void Inflate(int x) override;
+    int GetNumber(COLOR color) override;
+    virtual Shape& operator=(const Shape& obj) override;
     virtual ~Circle();
 };
 

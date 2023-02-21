@@ -51,7 +51,15 @@ List& List::operator=(const List& other)
 	{
 		for (p1; p1 != &other.Tail; p1 = p1->pNext, p = p->pNext)
 		{
-			*p->figure = *p1->figure;
+			try 
+			{
+				*p->figure = *p1->figure;  
+			}
+			catch (const char* msg) 
+			{
+				delete p->figure;
+				p->figure = &(p1->figure->Clone());
+			}
 		}
 	}
 	
@@ -59,9 +67,16 @@ List& List::operator=(const List& other)
 	{
 		for (p1; p1 != &other.Tail; p1 = p1->pNext, p = p->pNext)
 		{
-			p->figure = p1->figure;			
+			try 
+			{
+				*p->figure = *p1->figure;
+			}
+			catch (const char* msg) {
+				delete p->figure;
+				p->figure = &(p1->figure->Clone());
+			}
 		}
-		for (p == &other.Tail; p != &this->Tail; p = p->pNext)
+		for (/*p == &other.Tail*/; p != &this->Tail;/* p = p->pNext*/)
 		{
 			Node* temp = p->pNext;
 			delete p;
@@ -73,22 +88,39 @@ List& List::operator=(const List& other)
 
 		for (p; p != &this->Tail; p1 = p1->pNext, p = p->pNext)
 		{
-			p->figure = p1->figure;
-		}
-		for (p1 = &this->Tail; p1 != &other.Tail; p1 = p1->pNext)
-		{
-			//Почему-то возвращает null и в отладчике только pPrev, а pNext == null
-			if (typeid(p1->figure) == typeid(Rect))
-			{				
-				Rect* tmp = dynamic_cast<Rect*>(p1->figure);//const_cast<Shape*>(&pc));
-				this->push_back(*tmp);
-			}
-			else
+			try 
 			{
-				Circle* tmp = dynamic_cast<Circle*>(p1->figure);//const_cast<Shape*>(&pc));
-				this->push_back(*tmp);
+				*p->figure = *p1->figure;
 			}
+			catch (const char* msg) {
+				delete p->figure;
+				p->figure = &(p1->figure->Clone());
+			}
+		}
+		for (/*p1 = &this->Tail;*/; p1 != &other.Tail; p1 = p1->pNext)
+		{
+			this->push_back(*p1->figure);
+			//Почему-то возвращает null и в отладчике только pPrev, а pNext == null
+		//	if (typeid(p1->figure) == typeid(Rect))
+		//	{				
+		//		Rect* tmp = dynamic_cast<Rect*>(p1->figure);//const_cast<Shape*>(&pc));
+		//		this->push_back(*tmp);
+		//	}
+		//	else
+		//	{
+		//		Circle* tmp = dynamic_cast<Circle*>(p1->figure);//const_cast<Shape*>(&pc));
+		//		this->push_back(*tmp);
+		//	}
 			//this->push_front(*p1->figure);
+		//	if (typeid(p1->figure) == typeid(Rect))
+		//	{
+				
+		//	}
+		//	else
+		//	{
+		//		this->push_back(Circle(dynamic_cast<Circle&>(*p1->figure)));
+		//	}
+			
 		}
 	}
 
@@ -174,34 +206,85 @@ bool List::RemoveAll(const Shape& pc)
 		return false;
 	}	
 }
-//void List::sort()
-//{
-//	Node* pT = &Tail;
-//	Node* p = Head.pNext;
-//	Node* max = nullptr;
-//
-//	for (size_t i = m_size-1; i > 0; i--)
-//	{
-//		float MAX_area = 0;
-//			while (p != pT)
-//			{
-//				float area = 3.14*pow(p->m_data.GetR(),2);
-//				
-//				if (area > MAX_area)
-//				{
-//					MAX_area = area;
-//					max = p;
-//				}
-//				p = p->pNext;
-//			}
-//			Circle tmp = max->m_data;
-//			max->m_data = pT->pPrev->m_data;
-//			pT->pPrev->m_data = tmp;
-//			p = Head.pNext;
-//
-//			pT = pT->pPrev;
-//	}
-//}
+void List::sortByArea()
+{
+	Node* pT = &Tail;
+	Node* p = Head.pNext;
+	Node* max = nullptr;
+
+	for (size_t i = m_size-1; i > 0; i--)
+	{
+		float MAX_area = 0;
+			while (p != pT)
+			{
+				float area = p->figure->Getsquare();
+				
+				if (area > MAX_area)
+				{
+					MAX_area = area;
+					max = p;
+				}
+				p = p->pNext;
+			}
+			Shape *tmp = max->figure;
+			max->figure = pT->pPrev->figure;
+			pT->pPrev->figure = tmp;
+			p = Head.pNext;
+
+			pT = pT->pPrev;
+	}
+}
+void List::sortByColor()
+{
+	Node* pT = &Tail;
+	Node* p = Head.pNext;
+	Node* max = nullptr;
+
+	for (size_t i = m_size - 1; i > 0; i--)
+	{
+		int MAX_color = 0;
+		while (p != pT)
+		{
+			int area = p->figure->GetNumber(p->figure->GetColorForFunc());
+
+			if (area > MAX_color)
+			{
+				MAX_color = area;
+				max = p;
+			}
+			p = p->pNext;
+		}
+		Shape* tmp = max->figure;
+		max->figure = pT->pPrev->figure;
+		pT->pPrev->figure = tmp;
+		p = Head.pNext;
+
+		pT = pT->pPrev;
+	}
+}
+void List::sort()
+{
+	void (List:: *sort[2])(void) =
+	{
+		&List::sortByArea,
+		&List::sortByColor
+	};
+	int choice = 0;
+	std::cout << "Как хотите отсортировать?\n 1. По площади?\n2.По цвету?\nВаш ответ:";
+	std::cin >> choice;
+	choice--;
+	(this->*sort[choice])();
+	/*switch (choice)
+	{
+	case 0:
+		sort[choice];
+		break;
+	case 1:
+		sort[choice];
+		break;
+	}*/
+	
+}
 //Оно все равно не работает, однако хоть ошибок не возникает, если сделать поля всех классов public))
 //Но вряд ли это хорошо
 std::ostream& operator<< (std::ostream& out,const List& list)

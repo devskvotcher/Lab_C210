@@ -6,13 +6,7 @@ Shape::Shape(COLOR x)
 	this->color = x;    
 }
 
-void Shape::Getsquare()
-{
-   //Пустой чисто виртуальный метод
-}
 
-
-//Нужно закоментить для чисто вирутальной функции
 void Shape::Inflate(int x)
 {
 }
@@ -48,6 +42,11 @@ const char* Shape::GetColor(COLOR color)
     }
     return tmp;
 }
+
+Shape::COLOR& Shape::GetColorForFunc()
+{
+    return this->color;
+}
 Shape::COLOR& Shape::GetNumberOfColor(std::string c)
 {
     COLOR col=Shape::BLACK;
@@ -76,6 +75,7 @@ Shape::COLOR& Shape::GetNumberOfColor(std::string c)
     
     return col;
 }
+
 std::istream& operator>> (std::istream& in, const char* c)
 {
    // in << Shape::GetNumberOfColor(c);
@@ -107,9 +107,9 @@ Rect::Rect(const Rect& rect) : Shape(rect)                   //Конструктор копир
 }
 
 //Площадь прямоугольника
-void Rect::Getsquare()
+int Rect::Getsquare()
 {
-    std::cout <<"Площадь прямогульника=" << this->m_B_x * m_D_x + m_D_y * m_B_y << std::endl;
+   return (this->m_B_x + this->m_D_x) * (this->m_D_y + this->m_B_y);
 }
 
 Shape& Rect::Clone() const
@@ -153,6 +153,47 @@ void Rect::Inflate(int x)
     this->m_D_y = m_B_y + x;
 }
 
+Shape& Rect::operator=(const Shape& obj)
+{
+    if (typeid(obj) == typeid(Rect))
+    {       
+        this->color = static_cast<const Rect*>(&obj)->color;
+        this->m_B_x = static_cast<const Rect*>(&obj)->m_B_x;
+        this->m_B_y = static_cast<const Rect*>(&obj)->m_B_y;
+        this->m_D_x = static_cast<const Rect*>(&obj)->m_D_x;
+        this->m_D_y = static_cast<const Rect*>(&obj)->m_D_y;
+      
+    }
+    else
+    {
+        throw "Объекта не существует!";
+    }   
+    return *this;
+
+}
+
+int Rect::GetNumber(COLOR color)
+{
+    switch (color)
+    {
+    case Shape::RED:
+        return 0;
+        break;
+    case Shape::GREEN:
+        return 1;
+        break;
+    case Shape::BLUE:
+        return 2;
+        break;
+    case Shape::BLACK:
+        return 3;
+        break;
+    case Shape::WHITE:
+        return 4;
+        break;
+        }    
+}
+
 Circle::Circle() :Shape(color)
 {
     this->m_x = 0;
@@ -189,9 +230,9 @@ Shape& Circle::Clone() const
 }
 
 //Площадь круга
-void Circle::Getsquare()
+int Circle::Getsquare()
 {
-
+    return 3.14 * pow(this->m_radius,2);
 }
 
 Circle::~Circle()
@@ -224,6 +265,44 @@ void Circle::Print(std::ostream& out)
 void Circle::Inflate(int x)
 {
     this->m_radius = m_radius + x;
+}
+
+int Circle::GetNumber(COLOR color)
+{
+    switch (color)
+    {
+    case Shape::RED:
+        return 0;
+        break;
+    case Shape::GREEN:
+        return 1;
+        break;
+    case Shape::BLUE:
+        return 2;
+        break;
+    case Shape::BLACK:
+        return 3;
+        break;
+    case Shape::WHITE:
+        return 4;
+        break;
+    }
+}
+
+ Shape& Circle::operator=(const Shape& obj)
+{
+    if (typeid(obj) == typeid(Circle))
+    {
+        this->color = static_cast<const Circle*>(&obj)->color;
+        this->m_radius = static_cast<const Circle*>(&obj)->m_radius;
+        this->m_x = static_cast<const Circle*>(&obj)->m_x;
+        this->m_y = static_cast<const Circle*>(&obj)->m_y;
+    }
+    else
+    {
+        throw "Объекта не существует!";
+    }
+    return *this;
 }
 
 

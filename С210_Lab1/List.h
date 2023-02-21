@@ -15,7 +15,9 @@ public:
 	void push_back(const Shape& pc);
 	bool RemoveOne(const Shape& pc);
 	bool RemoveAll(const Shape& pc);
-//	void sort();
+	void sortByArea();
+	void sortByColor();
+	void sort();
 	~List();
 	friend std::ostream& operator<< (std::ostream& out, const List& list);
 	friend std::istream& operator>> (std::istream& in, const List& list);
