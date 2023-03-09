@@ -10,6 +10,8 @@
 #include "Swap.h"
 #include "MyString.h"
 #include <iostream>
+#include "MyStack.h"
+#include "MyStack2.h"
 #define stop __asm nop
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -66,39 +68,39 @@ int _tmain(int argc, _TCHAR* argv[])
 	//operator<< и operator>>, operator[]
 	
 	// Следующий фрагмент кода должен выполняться корректно
-	/*
+	
 	{
 		try {			
 			MyStack< int, 5 > iStack;
 			iStack << 1 << 2 << 3 << 4 << 5;						
 			std::cout << iStack;
 			//iStack << 6;				// ?
-
+		
 			int ar[5];
 			iStack >> ar[0] >> ar[1] >> ar[2] >> ar[3] >> ar[4];
 			std::cout << iStack;
 			//iStack >> ar[0];			// ?
-
+			
 			MyStack< MyString, 10 > strStack;
 			strStack << MyString("Aaa") << MyString("Bbb") << MyString("Ccc");
 			MyString str("Ddd");
 			strStack << str;
 			std::cout << strStack;
-
+			//
 			str = strStack[1];
 			strStack[2] = str;
 			//strStack[5] = str;		// ?	
 			std::cout << strStack;
-
+			//
 			MyString s1, s2;
 			strStack >> s1 >> s2;
 			std::cout << strStack;						
 		}
-		catch ( ??? ) {
-			// exception handling
+		catch (std::out_of_range e) {
+			std::cerr << e.what() << std::endl;
 		}
 	}
-	//*/
+	//
 
 
 	//Задание 2. 
@@ -114,7 +116,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//			 оператор присваивания, ...)
 
 	// Проверьте работоспособность разработанного шаблона класса
-	/*
+	
 	try {		
 		MyStack2< MyString> s1;	
 		s1.push(MyString("Aaa"));
@@ -123,30 +125,30 @@ int _tmain(int argc, _TCHAR* argv[])
 		s1.push(MyString("Ddd"));
 
 		MyStack2< MyString> s2(s1);
-		MyString str = s1.pop();
+		//MyString str = s1.pop();
 		s1.pop();
 		std::cout << s1 << s2;
 
 		s1 = s2;
-		std::cout << s1;
+	//	std::cout << s1;
 
-		s1.pop();
-		s2 = s1;
-		std::cout << s2;
+	////	s1.pop();
+	//	s2 = s1;
+	//	std::cout << s2;
 
-		MyStack2< MyString> s3(std::move(s1));
-		std::cout << s3 << s1;
+	//	MyStack2< MyString> s3(std::move(s1));
+	//	std::cout << s3 << s1;
 
-		s2.pop();
-		s3 = std::move(s2);
-		std::cout << s3 << s2;
+	//	s2.pop();
+	//	s3 = std::move(s2);
+	//	std::cout << s3 << s2;
 
-		s2.pop();	
+	//	s2.pop();	
 	}
-	catch ( ??? )  {
-		// exception handling
+	catch (std::out_of_range e) {
+		std::cerr << e.what() << std::endl;
 	}
-    //*/	
+    	
 
 	return 0;
 }
