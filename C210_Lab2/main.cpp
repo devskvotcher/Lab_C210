@@ -123,27 +123,27 @@ int _tmain(int argc, _TCHAR* argv[])
 		s1.push(MyString("Bbb"));
 		s1.push(MyString("Ccc"));
 		s1.push(MyString("Ddd"));
-
+		std::cout <<"Right" << s1<<"Left\n";
 		MyStack2< MyString> s2(s1);
-		//MyString str = s1.pop();
+		MyString str = s1.pop();
 		s1.pop();
 		std::cout << s1 << s2;
 
 		s1 = s2;
-	//	std::cout << s1;
 
-	////	s1.pop();
-	//	s2 = s1;
-	//	std::cout << s2;
+		s1.pop();
+		std::cout <<"s1" << s1;
+		s2 = s1;
 
-	//	MyStack2< MyString> s3(std::move(s1));
-	//	std::cout << s3 << s1;
+		std::cout <<"s2" << s2;
+		MyStack2< MyString> s3(std::move(s1));
+		std::cout << s3 << s1;
 
-	//	s2.pop();
-	//	s3 = std::move(s2);
-	//	std::cout << s3 << s2;
+		s2.pop();
+		s3 = std::move(s2);
+		std::cout << s3 << s2;
 
-	//	s2.pop();	
+		s2.pop();	
 	}
 	catch (std::out_of_range e) {
 		std::cerr << e.what() << std::endl;

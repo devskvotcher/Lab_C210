@@ -18,7 +18,7 @@ MyString& MyString::operator=(const MyString& other)
 	if (this != &other && other.m_pStr != nullptr)
 	{
 		size_t count = strlen(other.m_pStr) + 1;
-		delete m_pStr;
+		delete []m_pStr;
 		m_pStr = new char[count];
 		strcpy_s(m_pStr, count, other.m_pStr);
 	}
