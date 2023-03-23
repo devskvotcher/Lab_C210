@@ -34,7 +34,7 @@ std::istream& operator>> (std::ifstream& in, Point& point)
 	in >> point.m_x >> point.m_y;
 	return in;
 }
-bool Point::operator==(const Point& p)
+bool Point::operator==(const Point& p) const
 {
 	return (this->m_x == p.m_x) && (this->m_y == p.m_y);
 }
@@ -44,6 +44,12 @@ bool Point::operator<(const Point& other) const
 	else if (m_x > other.m_x) return false;
 	else return m_y < other.m_y;
 }
+std::ostream& operator<< (std::ostream& out, const Point* point)
+{
+	out << "(" << point->GetPointX() << ", " << point->GetPointY() << ")";
+	return out;
+}
+
 //Point::~Point()
 //{
 //

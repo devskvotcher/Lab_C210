@@ -33,24 +33,40 @@ void insert(std::vector<char>& vec, char value)
 	}
 }
 template<typename T>
-void insertBeforeEach(std::vector<T>& vec, const T& val) {
-	std::vector<T> newVec;
-	for (const auto& elem : vec) {
-		newVec.push_back(val);
-		newVec.push_back(elem);
+void insertBeforeEach(std::vector<T>& vec, const T& val) 
+{
+	for (typename std::vector<T>::iterator it = vec.begin(); it != vec.end(); it += 2)
+	{
+		it = vec.insert(it, val);
 	}
-	vec = newVec;
 }
-std::vector<char> removeRepeating(const std::vector<char>& vec) {
-	std::vector<char> result;
-	char prevChar = '\0';
-	for (const auto& currChar : vec) {
-		if (currChar != prevChar) {
-			result.push_back(currChar);
-			prevChar = currChar;
+//std::vector<char> removeRepeating(const std::vector<char>& vec) {
+//	std::vector<char> result;
+//	char prevChar = '\0';
+//	for (const auto& currChar : vec) {
+//		if (currChar != prevChar) {
+//			result.push_back(currChar);
+//			prevChar = currChar;
+//		}
+//	}
+//	return result;
+//}
+void removeRepeating(std::vector<char>& vec) {
+	typename std::vector<char>::iterator it = vec.begin();
+
+	while (it != vec.end()) {
+		typename std::vector<char>::iterator next = it + 1;
+
+		if (next == vec.end() || *it != *next) {
+			++it;
+		}
+		else {
+			while (next != vec.end() && *it == *next) {
+				++next;
+			}
+			it = vec.erase(it, next);
 		}
 	}
-	return result;
 }
 void removeDuplicates(std::vector<char>& vec) {
 	for (size_t i = 0; i < vec.size(); ++i) {
@@ -64,7 +80,6 @@ void removeDuplicates(std::vector<char>& vec) {
 		}
 	}
 }
-
 template<typename T>
 std::vector<T> reverseCopy(const std::vector<T>& vec) 
 {
@@ -83,6 +98,16 @@ void printContainer(const Container& cont, std::ostream& out)
 bool isNegative(const Point &p) 
 {
 	return p.GetPointX() < 0 || p.GetPointY() < 0;
+}
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& vv) {
+	//for (const auto& row : vv) {
+		for (const auto& elem : vv) {
+			os << elem << ' ';
+		}
+		os << '\n';
+	//}
+	return os;
 }
 int main()
 {
@@ -199,16 +224,33 @@ int main()
 	std::cout << std::endl;
 
 
-
+//*
 	//вектор элементов типа Point - vPoint1 а) с начальным размером 3. Какой конструктор
 	//будет вызван для каждого элемента?
+	// а) Если вектор vPoint1 инициализируется с начальным размером 3, 
+	// то для каждого элемента будет вызван конструктор по умолчанию для класса Point.
 	//b) vPoint2 с начальным размером 5 и проинициализируйте каждый элемент координатами (1,1).
-
+	std::vector<Point> vPoint2(5, Point(1, 1));
 
 
 	//вектор указателей на Point - vpPoint с начальным размером 5
 	//Подумайте: как корректно заставить эти указатели "указывать" на объекты Point
+	
 	{
+		std::vector<Point*> vpPoint(5);
+		for (int i = 0; i < 5; i++)
+		{
+			vpPoint[i] = new Point(i, i);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			std::cout << vpPoint[i] << std::endl;
+		}
+		
+		for (int i = 0; i < 5; i++) {
+			delete vpPoint[i];
+		}
+		vpPoint.clear();
 
 	//Подсказка: для вывода на печать значений скорее всего Вам понадобится
 		//а) специализация Вашей шаблонной функции
@@ -317,8 +359,18 @@ int main()
 	//...
 	//Распечатайте содержимое такого двухмерного вектора по строкам
 	//с помощью:
-	
+		int ar[] = { 11, 2, 4, 3, 5 };
+		std::vector<std::vector<int>> vv;
+
+		for (const int& num : ar) {
+			std::vector<int> row(num, num);
+			vv.push_back(row);
+		}
+
+		std::cout << vv << std::endl;
 	//std::cout<<vv<<std::endl;
+		//Распечать оепартор вывода в поток для вектора, а не для вектора вектора.
+		//Печать вектора
 	 stop
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,24 +392,31 @@ int main()
 		 std::cout << c << " ";
 	 }
 	 std::cout << std::endl; // выводит "q a b c "
-
+	 stop
 	
 
 	//Реализуйте функцию, которая должна вставлять новый элемент
 		 //перед каждым элементом вектора
 	//Проверьте работоспособность функции - вставьте перед каждым элементом вектора vChar2 букву 'W'
-	 insertBeforeEach(vChar2, 'W');
+	/* insertBeforeEach(vChar2, 'W');
 	 for ( auto elem : vChar2) 
 	 {
 		 std::cout << elem << " ";
 	 }
+	 std::cout << std::endl; */
+	 //Нужно использовать функцию insert, без вспомогательных контейнеров, вставить в нужные позиции W
+	 std::vector<char> vChar7 = { 'A', 'B', 'C', 'D', 'E' };
+	 insertBeforeEach(vChar7, 'W');
+
+	 for (typename std::vector<char>::const_iterator it = vChar7.begin(); it != vChar7.end(); ++it) {
+		 std::cout << *it << " ";
+	 }
 	 std::cout << std::endl;
-
-
+///
 ///////////////////////////////////////////////////////////////////
 	//Напишите функцию, которая должна удалять только повторяющиеся последовательности.
 	//Например: было - "qwerrrrty12222r3", стало - "qwety1r3"
-	 std::vector<char> vec1 = { 'q', 'w', 'e', 'r', 'r', 'r', 'r', 't', 'y', '1', '2', '2', '2', '2', 'r', '3' };
+	/* std::vector<char> vec1 = { 'q','q', 'w', 'e', 'r', 'r', 'r', 'r', 't', 'y', '1', '2', '2', '2', '2', 'r', '3', '3'};
 	 std::cout << "Original vector: ";
 	 for (const auto& ch : vec) {
 		 std::cout << ch;
@@ -368,10 +427,23 @@ int main()
 	 for (const auto& ch : vec1) {
 		 std::cout << ch;
 	 }
+	 std::cout << std::endl; */
+//Убрать использование алгоритмов
+//Использовать erase()
+	 //std::vector<char> vec1 = { 'q', 'q', 'w', 'e', 'r', 'r', 'r', 'r', 't', 'y', '1', '2', '2', '2', '2', 'r', '3', '3' };
+	 std::vector<char> vec1 = { 'q','q','q', 'w','w', 'e', 'r', 'r', 'r', 'r', 't', 'y', '1', '2', '2', '2', '2', 'r', '3','3' };
+	 std::cout << "Original vector: ";
+	 for (typename std::vector<char>::const_iterator it = vec1.begin(); it != vec1.end(); ++it) {
+		 std::cout << *it;
+	 }
 	 std::cout << std::endl;
 
-
-
+	 removeRepeating(vec1);
+	 std::cout << "Vector with repeating sequences removed: ";
+	 for (typename std::vector<char>::const_iterator it = vec1.begin(); it != vec1.end(); ++it) {
+		 std::cout << *it;
+	 }
+	 std::cout << std::endl;
 	stop
 
 ///////////////////////////////////////////////////////////////////
@@ -445,12 +517,13 @@ int main()
 	//Создайте список ptList2 из элементов Point таким образом, чтобы он стал 
 	//копией вектора элементов типа Point, но значения элементов списка располагались
 	//бы в обратном порядке 
-	std::vector<Point> vPoint = { {1, 2}, {3, 4}, {5, 6}, {7, 8} };
+	std::vector<Point> vPoint = { {1, 2}, {3, 4},{2,3},{-1,-3}, {5, 6}, {7, 8} ,{-9,-200} };
 
 	std::list<Point> ptList2;
 	for (auto it = vPoint.rbegin(); it != vPoint.rend(); ++it) {
 		ptList2.push_back(*it);
 	}
+	printContainer(ptList2, std::cout);
 
 
 	//Отсортируйте списки  ptList1 и ptList2 - методом класса list - sort()
@@ -461,7 +534,7 @@ int main()
 	ptList1.sort();
 	ptList2.sort();
 	
-
+	printContainer(ptList2, std::cout);
 
 	stop
 
@@ -473,26 +546,28 @@ int main()
 		//То есть, после операции объединения списки ptList1 и ptList2 
 		//будут пустыми.
 		ptList1.merge(ptList2);
+	printContainer(ptList1, std::cout);
 	stop
 
 	//Исключение элемента из списка - remove()
 	//Исключите из списка элемент с определенным значением.
 	//Подумайте: что должно быть перегружено в классе Point?
 		//оператор сравнения
-		Point p(2, 3);
+		Point p(2, 3);//
 	ptList1.remove(p);
-
+//	ptList1.remove(Point(2, 3));
+	printContainer(ptList1, std::cout);
 	//Исключение элемента из списка, удовлетворяющего заданному условию:
 	//любая из координат отрицательна - remove_if(). 
 	ptList1.remove_if(isNegative);
-	ptList2.remove_if(isNegative);
-
+	printContainer(ptList1, std::cout);
 	//Исключение из списка подряд расположенных дублей - unique(). 
 	ptList1.unique();
-	stop
+	//printContainer(ptList2, std::cout);
 
 ///////////////////////////////////////////////////////////////////
 	//Задание 2.Очередь с двумя концами - контейнер deque
+	stop
 
 	//Создайте пустой deque с элементами типа Point. С помощью
 	//assign заполните deque копиями элементов вектора. С помощью
@@ -508,9 +583,24 @@ int main()
 	//с помощью push_back(), push_front(), insert()
 	//С помощью erase удалите из deque все элементы, в которых строчки
 	//начинаются с 'A' или 'a'
+	std::deque<MyString> strings;
+	MyString a;
+	strings.push_back("Apple");
+	strings.push_front("Banana");
+	strings.insert(strings.begin() + 1, "Apricot");
+	strings.push_back("Orange");
+	strings.push_front("Avocado");
+	strings.insert(strings.end() - 1, "Mango");
 
-
-
+	std::cout << "Before removing 'A' and 'a' strings:" << std::endl;
+	for (const auto& str : strings) {
+		std::cout << str << std::endl;
+	}
+	a.removeAStrings(strings);
+	std::cout << "After removing 'A' and 'a' strings:" << std::endl;
+	for (const auto& str : strings) {
+		std::cout << str << std::endl;
+	}
 
 	return 0;
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
-
+#include <deque>
 
 class MyString
 {
@@ -16,6 +16,7 @@ public:
 	void sSwap(MyString& str2);
 	//friend void Swap<MyString>(MyString&, MyString&);
 	friend std::ostream& operator<<(std::ostream&, const MyString&);
+	void removeAStrings(std::deque<MyString>& strings);	
 private:
 	void Construct(const char*);
 };

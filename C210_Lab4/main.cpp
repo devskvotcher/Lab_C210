@@ -13,60 +13,37 @@
 #include "Point.h"
 #include <iostream>
 #include <tchar.h>
-
-class StudentGroups
-{
-	std::map<int, std::vector<std::string>> groups;
-public:
-	void add_student(int group, const std::string& surname)
-	{
-		groups[group].push_back(surname);
-		std::sort(groups[group].begin(), groups[group].end());
-	}
-	friend std::ostream& operator<<(std::ostream& os, const StudentGroups& sg);
-};
+#include "Template.h"
+//class StudentGroups
+//{
+//	std::map<int, std::multiset<std::string>> groups;
+//public:
+//	void add_student(int group, const std::string& surname)
+//	{
+//		groups[group].push(surname);
+//		std::sort(groups[group].begin(), groups[group].end());
+//	}
+//	friend std::ostream& operator<<(std::ostream& os, const StudentGroups& sg);
+//};
 #define stop __asm nop
-template <typename Container>
-void print_container(const Container& container)
-{
-	// для stack
-	if constexpr (std::is_same_v<Container, std::stack<typename Container::value_type>>)
-	{
-		std::stack<typename Container::value_type> temp_container = container;
-		while (!temp_container.empty())
-		{
-			std::cout << temp_container.top() << ' ';
-			temp_container.pop();
-		}
-		std::cout << '\n';
-	}
-	// для queue и priority_queue
-	else
-	{
-		for (auto&& element : container)
-		{
-			std::cout << element << ' ';
-		}
-		std::cout << '\n';
-	}
-}
-std::ostream& operator<<(std::ostream& os, const StudentGroups& sg)
-{
-	for (const auto& group : sg.groups)
-	{
-		os << "Group " << group.first << ": ";
-		for (const auto& surname : group.second)
-		{
-			os << surname << " ";
-		}
-		os << std::endl;
-	}
-	return os;
 
-}
+//std::ostream& operator<<(std::ostream& os, const StudentGroups& sg)
+//{
+//	for (const auto& group : sg.groups)
+//	{
+//		os << "Group " << group.first << ": ";
+//		for (const auto& surname : group.second)
+//		{
+//			os << surname << " ";
+//		}
+//		os << std::endl;
+//	}
+//	return os;
+//
+//}
 int _tmain()
 {
-
+	setlocale(NULL, "Rus");
 	
 	//Напишите шаблон функции для вывода значений stack, queue, priority_queue
 	//обратите внимание на то, что контейнеры предоставляют РАЗНЫЕ методы для 
@@ -80,16 +57,30 @@ int _tmain()
 	//Для очереди и приоритетной очереди используется цикл for, который перебирает все элементы контейнера 
 	//и выводит их на экран с помощью оператора << .
 
-//	std::stack<int> my_stack{ 1, 2, 3, 4, 5 };
-//	std::queue<int> my_queue{1, 2, 3, 4, 5 };
+	std::stack<int> my_stack;
+	my_stack.push(1);
+	my_stack.push(2);
+	my_stack.push(3);
+	my_stack.push(4);
+	my_stack.push(5);
+	std::queue<int> my_queue;
+	my_queue.push(1);
+	my_queue.push(2);
+	my_queue.push(3);
+	my_queue.push(4);
+	my_queue.push(5);
+	std::priority_queue<int> my_priority_queue;
+	my_priority_queue.push(1);
+	my_priority_queue.push(2);
+	my_priority_queue.push(3);
+	my_priority_queue.push(4);
+	my_priority_queue.push(5);
+
+	print_adapter(my_stack);           // выводит "5 4 3 2 1\n"
+	print_adapter(my_queue);           // выводит "1 2 3 4 5\n"
+	print_adapter(my_priority_queue);  // выводит "5 4 3 2 1\n"
+
 	
-
-//	print_container(my_stack);           // выводит "5 4 3 2 1\n"
-//	print_container(my_queue);           // выводит "1 2 3 4 5\n"
-//	print_container(my_priority_queue);  // выводит "5 4 3 2 1\n"
-
-	
-
 
 	////////////////////////////////////////////////////////////////////////////////////
 	//stack
@@ -97,24 +88,25 @@ int _tmain()
 	//Создайте стек таким образом, чтобы
 	//а) элементы стека стали копиями элементов вектора
 	//б) при выводе значений как вектора, так и стека порядок значений был одинаковым 
-
 	std::vector<int> vec{ 1, 2, 3, 4, 5 };
-	std::vector<int> vec_copy = vec; // создаем копию вектора
-	std::stack<int, std::vector<int>> my_stack{ vec_copy }; // создаем стек на основе копии вектора
+	std::vector<int> vec_copy(vec.rbegin(), vec.rend()); // создаем копию вектора
+	std::stack<int, std::vector<int>> my_stack2{ vec_copy }; // создаем стек на основе копии вектора
 	// выводим значения вектора и стека в одном цикле
 	std::cout << "Vector: ";
-	for (auto&& element : vec)
-	{
-		std::cout << element << ' ';
-	}
+	//for (auto&& element : vec)
+	//{
+	//	std::cout << element << ' ';
+	//}
+	print_container_impl(vec);
 	std::cout << '\n';
-
+	
 	std::cout << "Stack: ";
-	while (!my_stack.empty())
-	{
-		std::cout << my_stack.top() << ' ';
-		my_stack.pop();
-	}
+	//while (!my_stack2.empty())
+	//{
+	//	std::cout << my_stack2.top() << ' ';
+	//	my_stack2.pop();
+	//}
+	print_adapter(my_stack2);
 	std::cout << '\n';
 	
 
@@ -126,12 +118,12 @@ int _tmain()
 	//при этом явно задайте базовый контейнер.
 	//Измените значения первого и последнего элементов посредством front() и back()
 	//Подумайте, что требуется сделать при уничтожении такой очереди?
-	std::deque<Point*> my_deque;
+	std::queue<Point*> my_deque;
 
 	// создаем объекты Point с помощью оператора new и помещаем указатели на них в очередь
-	my_deque.push_back(new Point(1, 2));
-	my_deque.push_back(new Point(3, 4));
-	my_deque.push_back(new Point(5, 6));
+	my_deque.push(new Point(1, 2));
+	my_deque.push(new Point(3, 4));
+	my_deque.push(new Point(5, 6));
 
 	// изменяем значения первого и последнего элементов посредством front() и back()
 	(*my_deque.front()).SetPointX(10);
@@ -139,22 +131,23 @@ int _tmain()
 	//my_deque.back()->m_x = 10;  //Так почему-то не получилось
 	//(*my_deque.front()).m_y =20; // И так тоже
 	// выводим значения элементов очереди
-	for (auto&& element : my_deque)
-	{
-		std::cout << *element << ' ';
-	}
+	//for (auto&& element : my_deque)
+	//{
+	//	std::cout << *element << ' ';
+	//}
+	print_adapter(my_deque);
 	std::cout << '\n';
 
 	// удаляем объекты Point из очереди и освобождаем выделенную для них память
 	while (!my_deque.empty())
 	{
 		delete my_deque.front();
-		my_deque.pop_front();
+		my_deque.pop();
 	}
 
 
 
-
+	stop
 
 
 
@@ -268,21 +261,32 @@ int _tmain()
 		//Создайте (и распечатайте для проверки) map<string, int>, который будет
 		//содержать упорядоченные по алфавиту строки и
 		//количество повторений каждой строки в векторе
-		std::vector<std::string> vec8{ "apple", "banana", "orange", "apple", "orange", "banana" };
+	//	std::vector<std::string> vec8{ "apple", "banana", "orange", "apple", "orange", "banana" };
+
+	//std::map<std::string, int> str_count;
+	//for (const auto& str : vec8) {
+	//	auto it = str_count.find(str);
+	//	if (it == str_count.end()) {
+	//		str_count.insert({ str, 1 });
+	//	}
+	//	else {
+	//		it->second++;
+	//	}
+	//}
+	//Решить с помощью оператора индексирования для map, воспользоваться обычным итератором от begin до end, и не использовать auto
+
+	//for (const auto& pair : str_count) {
+	//	std::cout << pair.first << ": " << pair.second << std::endl;
+//	}
+std::vector<std::string> vec8{ "apple", "banana", "orange", "apple", "orange", "banana" };
 
 	std::map<std::string, int> str_count;
-	for (const auto& str : vec8) {
-		auto it = str_count.find(str);
-		if (it == str_count.end()) {
-			str_count.insert({ str, 1 });
-		}
-		else {
-			it->second++;
-		}
+	for (std::vector<std::string>::iterator it = vec8.begin(); it != vec8.end(); ++it) {
+		str_count[*it]++;
 	}
 
-	for (const auto& pair : str_count) {
-		std::cout << pair.first << ": " << pair.second << std::endl;
+	for (std::map<std::string, int>::iterator it = str_count.begin(); it != str_count.end(); ++it) {
+		std::cout << it->first << ": " << it->second << std::endl;
 	}
 
 
@@ -298,27 +302,45 @@ int _tmain()
 		//'A' -  "Abba" "Alfa"
 		//'B' -  "Beauty" "Beta"  ...
 		//...
-	const char* words[] = { "Abba", "Alfa", "Beta", "Beauty"};
+//	const char* words[] = { "Abba", "Alfa", "Beta", "Beauty"};
+//	const int num_words = sizeof(words) / sizeof(words[0]);
+//
+//	std::map<char, std::set<std::string>> word_map;
+//
+//	// Заполнение map
+//	for (int i = 0; i < num_words; ++i) {
+//		const std::string word(words[i]);
+//		if (word_map.find(word[0]) == word_map.end()) {
+//			// Если ключа еще нет в map, создаем новую запись
+//			word_map[word[0]] = std::vector<std::string>{ word };
+//		}
+//		else {
+//			// Иначе добавляем слово в вектор значений по ключу
+//			auto& vec = word_map[word[0]];
+//			if (std::find(vec.begin(), vec.end(), word) == vec.end()) {
+//				vec.push_back(word);
+//				// Сортировка вектора для сохранения порядка
+//				std::sort(vec.begin(), vec.end());
+//			}
+//		}
+//	}
+	const char* words[] = { "Abba", "Alfa", "Beta", "Beauty" };
 	const int num_words = sizeof(words) / sizeof(words[0]);
 
-	std::map<char, std::vector<std::string>> word_map;
+	std::map<char, std::set<std::string>> word_map;
 
-	// Заполнение map
 	for (int i = 0; i < num_words; ++i) {
-		const std::string word(words[i]);
-		if (word_map.find(word[0]) == word_map.end()) {
-			// Если ключа еще нет в map, создаем новую запись
-			word_map[word[0]] = std::vector<std::string>{ word };
+	//	char key = words[i][0];
+	//	std::string word = words[i];
+		word_map[words[i][0]].insert(words[i]);
+	}
+
+	for (std::map<char, std::set<std::string>>::iterator it = word_map.begin(); it != word_map.end(); ++it) {
+		std::cout << it->first << " - ";
+		for (std::set<std::string>::iterator set_it = it->second.begin(); set_it != it->second.end(); ++set_it) {
+			std::cout << *set_it << " ";
 		}
-		else {
-			// Иначе добавляем слово в вектор значений по ключу
-			auto& vec = word_map[word[0]];
-			if (std::find(vec.begin(), vec.end(), word) == vec.end()) {
-				vec.push_back(word);
-				// Сортировка вектора для сохранения порядка
-				std::sort(vec.begin(), vec.end());
-			}
-		}
+		std::cout << std::endl;
 	}
 
 	// Вывод содержимого map
@@ -343,31 +365,69 @@ int _tmain()
 		//фамилии могут дублироваться
 		//Сами группы тоже должны быть упорядочены по номеру
 		
-	StudentGroups groups;
-	groups.add_student(1, "Иванов");
-	groups.add_student(1, "Петров");
-	groups.add_student(1, "Сидоров");
-	groups.add_student(1, "Сидоров");
-	groups.add_student(1, "Сидоров");
-	groups.add_student(2, "Иванов");
-	groups.add_student(2, "Иванов");
-	groups.add_student(2, "Иванов");
-	groups.add_student(2, "Петров");
-	groups.add_student(2, "Сидоров");
+	//StudentGroups groups;
+	//groups.add_student(1, "Иванов");
+	//groups.add_student(1, "Петров");
+	//groups.add_student(1, "Сидоров");
+	//groups.add_student(1, "Сидоров");
+	//groups.add_student(1, "Сидоров");
+	//groups.add_student(2, "Иванов");
+	//groups.add_student(2, "Иванов");
+	//groups.add_student(2, "Иванов");
+	//groups.add_student(2, "Петров");
+	//groups.add_student(2, "Сидоров");
 		//номера 
 	//
-	std::cout << groups << std::endl;
+	//std::cout << groups << std::endl;
+	std::map<int, std::multiset<std::string>> groups;
+
+	// Добавление студентов в группы
+	groups[101].insert("Ivanov");
+	groups[101].insert("Petrov");
+	groups[101].insert("Sidorov");
+	groups[101].insert("Ivanov"); // дублирующаяся фамилия
+
+	groups[102].insert("Smith");
+	groups[102].insert("Johnson");
+	groups[102].insert("Williams");
+	groups[102].insert("Brown");
+
+	// Вывод информации о группах и студентах на экран
+	for (std::map<int, std::multiset<std::string>>::iterator it = groups.begin(); it != groups.end(); ++it) {
+		std::cout << "Group " << it->first << ":" << std::endl;
+		for (std::multiset<std::string>::iterator set_it = it->second.begin(); set_it != it->second.end(); ++set_it) {
+			std::cout << "  " << *set_it << std::endl;
+		}
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////////
 	//multimap
 	//а) создайте "англо-русский" словарь, где одному и тому же ключу будут соответствовать
 	//		несколько русских значений - pair<string,string>, например: strange: чужой, странный...
+	std::multimap<std::string, std::string> eng_rus_dict;
+
 	//б) Заполните словарь парами с помощью метода insert или проинициализируйте с помощью 
 	//		вспомогательного массива пара (пары можно конструировать или создавать с помощью шаблона make_pair)
+	eng_rus_dict.insert(std::make_pair("strange", "чужой"));
+	eng_rus_dict.insert(std::make_pair("strange", "странный"));
+	eng_rus_dict.insert(std::make_pair("apple", "яблоко"));
+	eng_rus_dict.insert(std::make_pair("book", "книга"));
+	eng_rus_dict.insert(std::make_pair("book", "заказ"));
 	//в) Выведите все содержимое словаря на экран
+	std::cout << "Словарь:" << std::endl;
+	for (const auto& entry : eng_rus_dict) {
+		std::cout << entry.first << ": " << entry.second << std::endl;
+	}
 	//г) Выведите на экран только варианты "переводов" для заданного ключа. Подсказка: для нахождения диапазона
 	//		итераторов можно использовать методы lower_bound() и upper_bound()
+	std::string key = "strange";
+	auto range = eng_rus_dict.equal_range(key);
+
+	std::cout << "Переводы для '" << key << "':" << std::endl;
+	for (auto it = range.first; it != range.second; ++it) {
+		std::cout << it->second << std::endl;
+	}
 
 
 
@@ -375,6 +435,7 @@ int _tmain()
    
 
   stop
+
 
 	return 0;
 }

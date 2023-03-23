@@ -33,6 +33,20 @@ MyString::MyString(const MyString& other)
 		m_pStr = nullptr;
 }
 
+void MyString::removeAStrings(std::deque<MyString>& strings)
+{
+	{
+		for (typename std::deque<MyString>::iterator it = strings.begin(); it != strings.end();) {
+			if (it->m_pStr != nullptr && ((*it->m_pStr == 'A') || (*it->m_pStr == 'a'))) {
+				it = strings.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
+}
+
 void MyString::Construct(const char* pStr)
 {
 	size_t count = strlen(pStr) + 1;
