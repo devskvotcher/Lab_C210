@@ -14,14 +14,29 @@
 #include "Template.h"
 using namespace std;	
 #define	  stop __asm nop
+class Predicat
+{
+	char c;
+public:
+	Predicat(char pre)
+	{
+		this->c = pre;
+	}
+	bool operator()(const std::string &str)
+	{
+		return  std::toupper(c) == std::toupper(str[0]);
+	}
+	
+};
 char to_lower(unsigned char c) 
 {
 	return std::tolower(c);
 }
 
-void to_lower_case(std::string& input) 
+std::string& to_lower_case(std::string& input) 
 {
 	std::transform(input.begin(), input.end(), input.begin(), to_lower);
+	return input;
 }
 bool is_even(const std::pair<const std::string, int>& p) {
 	return ((p.second & 1) == 0);
@@ -278,12 +293,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				std::set<std::string> lower_case_strings;
 
-				for (std::list<std::string>::const_iterator it = input_strings.begin(); it != input_strings.end(); ++it) {
-					std::string lower_case_string;
-					std::transform(it->begin(), it->end(), std::back_inserter(lower_case_string), to_lower);
-					lower_case_strings.insert(lower_case_string);
-				}
-
+				//for (std::list<std::string>::const_iterator it = input_strings.begin(); it != input_strings.end(); ++it) {
+				//	std::string lower_case_string;
+				//	std::transform(it->begin(), it->end(), std::back_inserter(lower_case_string), to_lower);
+				//	lower_case_strings.insert(lower_case_string);
+				//}
+				std::transform(input_strings.begin(),input_strings.end(), std::inserter(lower_case_strings, lower_case_strings.begin()), to_lower_case);
 				std::cout << "Lower case strings in the set:" << std::endl;
 				for (std::set<std::string>::const_iterator it = lower_case_strings.begin(); it != lower_case_strings.end(); ++it) {
 					std::cout << *it << std::endl;
@@ -298,21 +313,26 @@ int _tmain(int argc, _TCHAR* argv[])
 		//Дан вектор с элементами типа string. С помощью copy_if() требуется
 		//вывести сначала строки, начинающиеся с буквы "А" или "а", затем с "Б"...
 		//При этом порядок строк в исходном векторе менять не нужно!
-		std::vector<std::string> words = { "apple", "Banana", "Carrot", "Dog", "elephant" };
-		std::vector<std::string> result(words.size());
-		std::copy_if(words.begin(), words.end(), result.begin(), [](const std::string& word) {
-			for (char c : word) {
-				if (is_alpha(c)) {
-					return true;
+		std::vector<std::string> words = {"Yes","antrekot","Bob" ,"apple", "Banana", "Carrot", "123", "Dog","qwe123", "elephant"};
+		/*for (char c = 'A'; c <= 'Z'; c++) 
+		{
+			for (const std::string& word : words) 
+			{
+				if (!word.empty() && std::toupper(word[0]) == c) 
+				{
+					std::cout << word << '\n';
 				}
 			}
-			return false;
-			});
-		std::sort(result.begin(), result.end(), compare_alpha);
-		for (const std::string& word : result) {
-			std::cout << word << " ";
+		}*/
+		for (char c = 'A'; c <= 'Z'; c++)
+		{
+			std::vector<std::string>::iterator it = std::find_if(words.begin(), words.end(), Predicat(c));
+			if (it != words.end())
+			{
+				std::copy_if(words.begin(), words.end(), std::ostream_iterator<std::string>(std::cout, " "), Predicat(c));
+				std::cout << "\n";
+			}
 		}
-		std::cout << std::endl;
 
 
 		stop
